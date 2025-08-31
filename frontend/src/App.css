@@ -1,0 +1,48 @@
+/* App-specific styles */
+.App {
+    min-height: 100vh;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-user span {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.modal-content {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Additional responsive adjustments */
+@media (max-width: 480px) {
+    .dashboard-header {
+        padding: 32px 0;
+    }
+
+    .dashboard-title {
+        font-size: 28px;
+    }
+
+    .dashboard-subtitle {
+        font-size: 16px;
+    }
+
+    .boards-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .board-card {
+        padding: 20px;
+    }
+
+    .board-card-title {
+        font-size: 20px;
+    }
+}
