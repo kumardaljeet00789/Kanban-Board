@@ -21,11 +21,13 @@ const Board = () => {
 
     const fetchBoard = useCallback(async () => {
         try {
-            const response = await axios.get(`/api/boards/${id}`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/boards/${id}`);
             setBoard(response.data.board);
             setLists(response.data.lists);
         } catch (error) {
-            toast.error('Failed to fetch board');
+            console.error('Error fetching board:', error);
+            console.error('Error response:', error.response?.data);
+            toast.error(error.response?.data?.message || 'Failed to fetch board');
             navigate('/');
         } finally {
             setLoading(false);
@@ -38,7 +40,7 @@ const Board = () => {
 
     const handleCreateList = async (listData) => {
         try {
-            const response = await axios.post('/api/lists', { ...listData, board: id });
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/lists`, { ...listData, board: id });
             setLists([...lists, response.data]);
             setShowCreateListModal(false);
             toast.success('List created successfully!');
@@ -49,7 +51,7 @@ const Board = () => {
 
     const handleCreateCard = async (cardData) => {
         try {
-            const response = await axios.post('/api/cards', { ...cardData, list: selectedListId });
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/cards`, { ...cardData, list: selectedListId });
             const updatedLists = lists.map(list => {
                 if (list._id === selectedListId) {
                     return { ...list, cards: [...(list.cards || []), response.data] };
@@ -77,7 +79,7 @@ const Board = () => {
             setLists(newLists);
 
             try {
-                await axios.put(`/api/lists/${removed._id}/move`, { newPosition: destination.index });
+                await axios.put(`${process.env.REACT_APP_API_URL}/api/lists/${removed._id}/move`, { newPosition: destination.index });
             } catch (error) {
                 toast.error('Failed to move list');
                 fetchBoard(); // Refresh to get correct order
@@ -108,7 +110,7 @@ const Board = () => {
             setLists(newLists);
 
             try {
-                await axios.put(`/api/cards/${movedCard._id}/move`, {
+                await axios.put(`${process.env.REACT_APP_API_URL}/api/cards/${movedCard._id}/move`, {
                     sourceListId: source.droppableId,
                     targetListId: destination.droppableId,
                     newPosition: destination.index
@@ -123,7 +125,7 @@ const Board = () => {
     const handleDeleteList = async (listId) => {
         if (window.confirm('Are you sure you want to delete this list?')) {
             try {
-                await axios.delete(`/api/lists/${listId}`);
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/lists/${listId}`);
                 setLists(lists.filter(list => list._id !== listId));
                 toast.success('List deleted successfully!');
             } catch (error) {
@@ -135,7 +137,7 @@ const Board = () => {
     const handleDeleteCard = async (cardId, listId) => {
         if (window.confirm('Are you sure you want to delete this card?')) {
             try {
-                await axios.delete(`/api/cards/${cardId}`);
+                await axios.delete(`${process.env.REACT_APP_API_URL}/api/cards/${cardId}`);
                 const updatedLists = lists.map(list => {
                     if (list._id === listId) {
                         return { ...list, cards: list.cards.filter(card => card._id !== cardId) };
@@ -276,8 +278,8 @@ const Board = () => {
                                                                             }}>
                                                                                 {card.priority || 'medium'}
                                                                             </span>
-                                                                            {card.assignee && (
-                                                                                <span>@{card.assignee.username}</span>
+                                                                            {card.assignees && card.assignees.length > 0 && (
+                                                                                <span>@{card.assignees[0].username}</span>
                                                                             )}
                                                                         </div>
                                                                     </div>

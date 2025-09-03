@@ -15,8 +15,9 @@ const createBoard = async (req, res) => {
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-
+        console.log("Request Body:", req.user._id);
         const board = await createBoardService(req.body, req.user._id);
+        console.log("Created Board:", board);
         res.status(201).json(board);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -34,9 +35,12 @@ const getBoards = async (req, res) => {
 
 const getBoardById = async (req, res) => {
     try {
+        console.log('Getting board by ID:', req.params.id, 'for user:', req.user._id);
         const result = await getBoardByIdService(req.params.id, req.user._id);
+        console.log('Board found:', result ? 'YES' : 'NO');
         res.json(result);
     } catch (error) {
+        console.error('Error in getBoardById:', error.message);
         res.status(400).json({ message: error.message });
     }
 };

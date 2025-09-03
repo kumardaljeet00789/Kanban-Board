@@ -14,7 +14,7 @@ const createCard = async (cardData, userId) => {
             _id: list.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -39,7 +39,7 @@ const createCard = async (cardData, userId) => {
 
         // Populate the card with user data
         await card.populate([
-            { path: 'assignee', select: 'username avatar' },
+            { path: 'assignees', select: 'username avatar' },
             { path: 'comments.user', select: 'username avatar' }
         ]);
 
@@ -60,7 +60,7 @@ const getCards = async (listId, userId) => {
             _id: list.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -71,7 +71,7 @@ const getCards = async (listId, userId) => {
 
         const cards = await Card.find({ list: listId })
             .sort({ position: 1 })
-            .populate('assignee', 'username avatar')
+            .populate('assignees', 'username avatar')
             .populate('comments.user', 'username avatar');
 
         return cards;
@@ -91,7 +91,7 @@ const updateCard = async (cardId, updateData, userId) => {
             _id: card.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -105,7 +105,7 @@ const updateCard = async (cardId, updateData, userId) => {
             updateData,
             { new: true, runValidators: true }
         ).populate([
-            { path: 'assignee', select: 'username avatar' },
+            { path: 'assignees', select: 'username avatar' },
             { path: 'comments.user', select: 'username avatar' }
         ]);
 
@@ -126,7 +126,7 @@ const deleteCard = async (cardId, userId) => {
             _id: card.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -165,7 +165,7 @@ const moveCard = async (cardId, sourceListId, targetListId, newPosition, userId)
             _id: card.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -185,7 +185,7 @@ const moveCard = async (cardId, sourceListId, targetListId, newPosition, userId)
 
         // Populate the card with user data
         await card.populate([
-            { path: 'assignee', select: 'username avatar' },
+            { path: 'assignees', select: 'username avatar' },
             { path: 'comments.user', select: 'username avatar' }
         ]);
 
@@ -218,7 +218,7 @@ const addComment = async (cardId, commentData, userId) => {
             _id: card.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -236,7 +236,7 @@ const addComment = async (cardId, commentData, userId) => {
 
         // Populate the card with user data
         await card.populate([
-            { path: 'assignee', select: 'username avatar' },
+            { path: 'assignees', select: 'username avatar' },
             { path: 'comments.user', select: 'username avatar' }
         ]);
 
@@ -252,7 +252,7 @@ const searchCards = async (query, boardId, userId) => {
             _id: boardId,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -268,7 +268,7 @@ const searchCards = async (query, boardId, userId) => {
                 { description: { $regex: query, $options: 'i' } }
             ]
         }).populate([
-            { path: 'assignee', select: 'username avatar' },
+            { path: 'assignees', select: 'username avatar' },
             { path: 'list', select: 'title' }
         ]);
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FiPlus, FiEdit3, FiTrash2, FiEye, FiUsers, FiCalendar, FiTag } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
 import CreateBoardModal from './CreateBoardModal';
@@ -9,6 +9,7 @@ import axios from 'axios';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const [boards, setBoards] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingBoard, setEditingBoard] = useState(null);
@@ -18,10 +19,17 @@ const Dashboard = () => {
     fetchBoards();
   }, []);
 
+  // Refresh boards when user navigates back to dashboard
+  useEffect(() => {
+    if (location.pathname === '/') {
+      fetchBoards();
+    }
+  }, [location.pathname]);
+
   const fetchBoards = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/boards`);
-      setBoards(response.data.boards || []);
+      setBoards(response.data || []);
     } catch (error) {
       console.error('Error fetching boards:', error);
     } finally {
@@ -35,11 +43,11 @@ const Dashboard = () => {
       console.log('Current token:', localStorage.getItem('token'));
       console.log('Axios default headers:', axios.defaults.headers.common);
 
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/boards`, boardData);
-      const newBoard = response.data;
-      setBoards([...boards, newBoard.board]);
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/boards`, boardData);
       setShowCreateModal(false);
       toast.success('Board created successfully!');
+      // Refresh the boards list
+      await fetchBoards();
     } catch (error) {
       console.error('Error creating board:', error);
       console.error('Error response:', error.response?.data);
@@ -49,14 +57,12 @@ const Dashboard = () => {
 
   const handleEditBoard = async (boardData) => {
     try {
-      const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/boards/${editingBoard._id}`, boardData);
-      const updatedBoard = response.data;
-      setBoards(boards.map(board =>
-        board._id === editingBoard._id ? updatedBoard.board : board
-      ));
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/boards/${editingBoard._id}`, boardData);
       setShowCreateModal(false);
       setEditingBoard(null);
       toast.success('Board updated successfully!');
+      // Refresh the boards list
+      await fetchBoards();
     } catch (error) {
       console.error('Error updating board:', error);
       toast.error(error.response?.data?.message || 'Failed to update board');
@@ -69,9 +75,10 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/api/boards/${boardId}`);
-      setBoards(boards.filter(board => board._id !== boardId));
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/boards/${boardId}`);
       toast.success('Board deleted successfully!');
+      // Refresh the boards list
+      await fetchBoards();
     } catch (error) {
       console.error('Error deleting board:', error);
       toast.error(error.response?.data?.message || 'Failed to delete board');
@@ -133,14 +140,14 @@ const Dashboard = () => {
             <div className="stat-card-header">
               <span className="stat-card-title">Total Lists</span>
             </div>
-            <div className="stat-card-value">{boards.reduce((total, board) => total + (board.lists?.length || 0), 0)}</div>
+            <div className="stat-card-value">{boards.reduce((total, board) => total + (board.listsCount || 0), 0)}</div>
           </div>
 
           <div className="stat-card">
             <div className="stat-card-header">
               <span className="stat-card-title">Total Cards</span>
             </div>
-            <div className="stat-card-value">{boards.reduce((total, board) => total + (board.lists?.reduce((listTotal, list) => listTotal + (list.cards?.length || 0), 0) || 0), 0)}</div>
+            <div className="stat-card-value">{boards.reduce((total, board) => total + (board.cardsCount || 0), 0)}</div>
           </div>
 
           <div className="stat-card">
@@ -226,7 +233,7 @@ const Dashboard = () => {
                   <div className="board-card-stats">
                     <div className="board-stat">
                       <FiEye />
-                      <span>{board.lists?.length || 0} lists</span>
+                      <span>{board.listsCount || 0} lists</span>
                     </div>
                     <div className="board-stat">
                       <FiUsers />

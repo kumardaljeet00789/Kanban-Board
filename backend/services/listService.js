@@ -9,7 +9,7 @@ const createList = async (listData, userId) => {
             _id: listData.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -43,7 +43,7 @@ const getLists = async (boardId, userId) => {
             _id: boardId,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -81,7 +81,7 @@ const updateList = async (listId, updateData, userId) => {
             _id: list.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -114,7 +114,7 @@ const deleteList = async (listId, userId) => {
             _id: list.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });
@@ -161,7 +161,7 @@ const moveList = async (listId, newPosition, userId) => {
             _id: list.board,
             $or: [
                 { owner: userId },
-                { members: userId },
+                { 'members.user': userId },
                 { isPublic: true }
             ]
         });

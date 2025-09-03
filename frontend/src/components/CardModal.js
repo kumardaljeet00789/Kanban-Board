@@ -180,10 +180,10 @@ const CardModal = ({ card, onClose, onUpdate, onDelete }) => {
                                     color: '#888'
                                 }}>
                                     <span>Priority: <strong>{card.priority}</strong></span>
-                                    {card.assignee && (
+                                    {card.assignees && card.assignees.length > 0 && (
                                         <span>
                                             <FiUser style={{ marginRight: '4px' }} />
-                                            Assigned to: <strong>{card.assignee.username}</strong>
+                                            Assigned to: <strong>{card.assignees[0].username}</strong>
                                         </span>
                                     )}
                                 </div>
