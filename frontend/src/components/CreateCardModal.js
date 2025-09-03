@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiCreditCard, FiFlag } from 'react-icons/fi';
+import './Modal.css';
 
 const CreateCardModal = ({ onClose, onSubmit, listId }) => {
     const [formData, setFormData] = useState({
@@ -32,13 +33,16 @@ const CreateCardModal = ({ onClose, onSubmit, listId }) => {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2 className="modal-title">Create New Card</h2>
+                    <h2 className="modal-title">
+                        <FiCreditCard />
+                        Create New Card
+                    </h2>
                     <button className="modal-close" onClick={onClose}>
                         <FiX />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="modal-form">
                     <div className="form-group">
                         <label className="form-label">Card Title *</label>
                         <input
@@ -65,25 +69,23 @@ const CreateCardModal = ({ onClose, onSubmit, listId }) => {
                     </div>
 
                     <div className="form-group">
-                        <label className="form-label">Priority</label>
+                        <label className="form-label">
+                            <FiFlag style={{ marginRight: '8px', display: 'inline' }} />
+                            Priority
+                        </label>
                         <select
                             name="priority"
                             value={formData.priority}
                             onChange={handleChange}
                             className="form-input"
                         >
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
+                            <option value="low">🟢 Low Priority</option>
+                            <option value="medium">🟡 Medium Priority</option>
+                            <option value="high">🔴 High Priority</option>
                         </select>
                     </div>
 
-                    <div style={{
-                        display: 'flex',
-                        gap: '12px',
-                        justifyContent: 'flex-end',
-                        marginTop: '24px'
-                    }}>
+                    <div className="modal-actions">
                         <button
                             type="button"
                             className="btn btn-secondary"

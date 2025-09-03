@@ -116,13 +116,13 @@ const Dashboard = () => {
             Create New Board
           </button>
           {/* Test button to verify modal state */}
-          <button
+          {/* <button
             onClick={() => console.log('Modal state:', showCreateModal)}
             className="btn btn-secondary"
             style={{ marginLeft: '10px' }}
           >
             Debug Modal State
-          </button>
+          </button> */}
         </div>
       </div>
 

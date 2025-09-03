@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiList } from 'react-icons/fi';
+import './Modal.css';
 
 const CreateListModal = ({ onClose, onSubmit, boardId }) => {
     const [formData, setFormData] = useState({
@@ -30,13 +31,16 @@ const CreateListModal = ({ onClose, onSubmit, boardId }) => {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2 className="modal-title">Create New List</h2>
+                    <h2 className="modal-title">
+                        <FiList />
+                        Create New List
+                    </h2>
                     <button className="modal-close" onClick={onClose}>
                         <FiX />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="modal-form">
                     <div className="form-group">
                         <label className="form-label">List Title *</label>
                         <input
@@ -50,12 +54,7 @@ const CreateListModal = ({ onClose, onSubmit, boardId }) => {
                         />
                     </div>
 
-                    <div style={{
-                        display: 'flex',
-                        gap: '12px',
-                        justifyContent: 'flex-end',
-                        marginTop: '24px'
-                    }}>
+                    <div className="modal-actions">
                         <button
                             type="button"
                             className="btn btn-secondary"
